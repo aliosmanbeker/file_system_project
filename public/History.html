@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+</head>
+<body>
+    <h1>Request History</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>IP Address</th>
+            <th>Port</th>
+            <th>File Name</th>
+            <th>File Size</th>
+            <th>Lines</th>
+            <th>Created Date</th>
+            <th>Modified Date</th>
+            <th>Sum Result</th>
+            <th>Success</th>
+        </tr>
+        {% for log in logs %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.ip_address }}</td>
+                <td>{{ log.port }}</td>
+                <td>{{ log.file_name }}</td>
+                <td>{{ log.file_size }}</td>
+                <td>{{ log.lines }}</td>
+                <td>{{ log.created_date }}</td>
+                <td>{{ log.modified_date }}</td>
+                <td>{{ log.sum_result }}</td>
+                <td>{{ log.success }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
