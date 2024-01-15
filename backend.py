@@ -11,15 +11,21 @@ from flask_jwt_extended import (
 )
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///requests.db'
-app.config['JWT_SECRET_KEY'] = 'your_secret_key_here'
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 CORS(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:admin@localhost/requestdb'
+
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'your_secret_key_here'
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 class RequestLog(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.String(50), default=str(datetime.utcnow()))  # Convert datetime object to string
     ip_address = db.Column(db.String(15))
@@ -29,7 +35,7 @@ class RequestLog(db.Model):
     lines = db.Column(db.String(10))
     created_date = db.Column(db.String(20))
     modified_date = db.Column(db.String(20))
-    sum_result = db.Column(db.String(50), nullable=True)
+    sum_result = db.Column(db.String(500), nullable=True)
     success = db.Column(db.String(5))
 
 class User(db.Model):
@@ -157,8 +163,10 @@ def calculate_sum():
         numbers = request.json['numbers']
         result = sum(numbers)
 
+        scientific_notation = "{:e}".format(result)
+
         # Log request details to the database
-        log_request(request, result, success=True)
+        log_request(request, scientific_notation, success=True)
 
         return jsonify({'sum': result})
     except Exception as e:
@@ -209,7 +217,7 @@ def save_to_database():
             sum_result=sum_result,
             success=success,
         )
-
+        log_request(request, sum_result[:250], success)
         db.session.add(log_entry)
         db.session.commit()
 
@@ -220,6 +228,16 @@ def save_to_database():
     
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create database tables before running the app
+        db.create_all()    # Create database tables before running the app
+
+        
+        admin_email = 'admin@example.com'
+        admin_password = 'admin_password'
+        existing_admin = User.query.filter_by(email=admin_email).first()
+        if not existing_admin:
+            new_admin = User(email=admin_email, is_admin=True)
+            new_admin.set_password(admin_password)
+            db.session.add(new_admin)
+            db.session.commit()
 
     app.run(debug=True)

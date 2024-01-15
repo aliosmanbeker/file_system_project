@@ -37,7 +37,8 @@ const Register = () => {
       <label>Confirm Password:</label>
       <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
       <br />
-      <button onClick={handleRegister}>Register</button>
+      <button type="button" class="btn btn-outline-success"onClick={handleRegister}>Register</button>
+      
     </div>
   );
 };

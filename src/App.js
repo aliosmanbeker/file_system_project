@@ -100,7 +100,8 @@ function App() {
         <label>Password:</label>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <br />
-        <button onClick={handleLogin}>Login</button>
+        
+        <button type="button" class="btn btn-success"onClick={handleLogin}>Login</button>
       </div>
     );
   };
@@ -122,8 +123,8 @@ function App() {
       });
 
       const sumResult = response.data.sum;
-      const formattedSumResult = parseFloat(sumResult).toLocaleString();
-      setSumResult(formattedSumResult);
+      const scientificNotation = parseFloat(sumResult).toExponential();
+      setSumResult(scientificNotation);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -200,19 +201,25 @@ function App() {
       {userToken && (
         <div>
           <h2>Logged In</h2>
-          <button onClick={handleLogout}>Logout</button>
+          
+          <button type="button" class="btn btn-danger"onClick={handleLogout}>Logout</button>
         </div>
       )}
+      <div>
+        
+        <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handleFileChange} accept="text/plain" />
+        <button onClick={() => document.getElementById('fileInput').click()}>Choose A File</button>
+      </div>
 
-      <input type="file" id="fileInput" onChange={handleFileChange} accept="text/plain" />
+      
       {fileInfo && (
-        <div>
+        <div style={{ marginLeft: '100px' }}>
           <p>File size: {fileInfo.size} MB</p>
           <p>Number of Rows: {fileInfo.lines}</p>
           <p>Creation Date: {fileInfo.createdDate}</p>
           <p>Modified Date: {fileInfo.modifiedDate}</p>
           {sumResult !== null && <p>Total of Numbers in File: {sumResult}</p>}
-          <button onClick={handleSaveToDatabase}>Veritabanına Kaydet</button>
+          <button onClick={handleSaveToDatabase}>Save to Database</button>
         </div>
       )}
       <button onClick={handleSumButtonClick} disabled={!fileInfo || fileInfo.size > 100000000}>
